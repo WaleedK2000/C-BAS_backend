@@ -24,6 +24,13 @@ app.use('/api/fetch/docker/', (req, res, next) => {
     next();
 }, require('./routes/dockerData'));
 
+app.use('/api/fetch/container/', (req, res, next) => {
+    // req.con = 'nill';
+    //console.log(req.body.connection);
+    //console.log(connection);
+    next();
+}, require('./routes/containerData'));
+
 
 
 app.get('/', async (req, res) => {
