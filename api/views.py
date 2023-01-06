@@ -10,17 +10,15 @@ def getData(request):
     client = docker.from_env()
     lis = client.containers.list()
 
+    containerList = []
     
 
     dictContainer = {}
     if len(lis) > 0:
 
         for container in lis:
-
-            # dictContainer[container.name] = {'id': container.id, 'status': container.status, 'labels': container.labels, 'image': container.attrs}
             dictContainer[container.name] = container.attrs
 
-    # for image in client.images.list():
 
     response = {"running ": len(lis), "error": "none", "data":dictContainer }
 
