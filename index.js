@@ -1,75 +1,34 @@
-const cors = require('cors');
-const express = require('express');
-// const connectToMySql = require('./db');
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
 
 const app = express();
-const port = 4000;
 
+const User = require("./models/User");
 
+const nodesRouter = require("./routes/nodeManagement");
+const userMangementRoutes = require("./routes/nodeManagement");
+// const signupRoute = rq
+
+app.use(express.json());
 app.use(cors());
-// const connection = connectToMySql();
 
-// app.use('/api/auth', (req, res, next) => {
-//     req.con = connection;
-//     //console.log(req.body.connection);
-//     //console.log(connection);
-//     next();
-// }, require('./routes/auth'));
+app.use("/api/users", userMangementRoutes);
 
+app.use("/api/nodes", nodesRouter);
 
-app.use('/api/fetch/docker/', (req, res, next) => {
-    // req.con = 'nill';
-    //console.log(req.body.connection);
-    //console.log(connection);
-    next();
-}, require('./routes/dockerData'));
+mongoose.connect("mongodb://127.0.0.1:27017/cbas", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
-app.use('/api/fetch/container/', (req, res, next) => {
-    // req.con = 'nill';
-    //console.log(req.body.connection);
-    //console.log(connection);
-    next();
-}, require('./routes/containerData'));
+const port = process.env.PORT || 3000;
+app.listen(port, () => console.log(`Server listening on port ${port}`));
 
+// app.listen(3000, () => {
+//   //   const MyModel = mongoose.model("Test", new Schema({ name: String }));
 
+//   const MyModel = mongoose.model("Test", new Schema({ name: String }));
 
-app.get('/', async (req, res) => {
-
-    try {
-
-        const fs = require('fs');
-        var Docker = require('dockerode');
-        var docker = new Docker({ host: '127.0.0.1', port: 2375 });
-
-        let list = await docker.listContainers();
-        console.log('Container List')
-
-        if (list.length > 0) {
-
-            let bestest = list[0];
-
-            console.log(bestest);
-            console.log(bestest.Mounts)
-
-            var container = docker.getContainer(bestest.Id);
-            container.inspect(function (err, data) {
-                console.log(data);
-            });
-
-            res.send(list).status(200)
-
-        } else {
-            res.send('none').status(200)
-        }
-
-    } catch (error) {
-        console.log(error);
-    }
-
-    // res.send('Hello api!').status(200)
-
-})
-
-app.listen(port, () => {
-    console.log(`C-BAS app listening on port ${port}`);
-})
+//   console.log("Node Running on port 3000");
+// });
