@@ -44,4 +44,21 @@ router.put("/api/nodes/:id", async (req, res) => {
   }
 });
 
+// Get status
+
+router.get("/api/nodes/:id", async (req, res) => {
+  console.log(req.params.id);
+
+  try {
+    const node = await Node.findById(req.params.id);
+    if (!node) {
+      return res.status(404).send({ error: "Node not found" });
+    }
+    res.send(node);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Server error" });
+  }
+});
+
 module.exports = router;
