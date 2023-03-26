@@ -6,7 +6,7 @@ const app = express();
 
 const User = require("./models/User");
 
-const userMangementRoutes = require("./routes/nodeManagement");
+const userMangementRoutes = require("./routes/userManagement");
 const nodesRouter = require("./routes/nodeManagement");
 const exploits = require("./routes/exploits");
 // const signupRoute = rq
