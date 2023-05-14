@@ -9,6 +9,8 @@ const User = require("./models/User");
 const userMangementRoutes = require("./routes/userManagement");
 const nodesRouter = require("./routes/nodeManagement");
 const exploits = require("./routes/exploits");
+const data = require("./routes/data");
+
 // const signupRoute = rq
 
 app.use(express.json());
@@ -17,6 +19,7 @@ app.use(cors());
 app.use("/api/users", userMangementRoutes);
 app.use("/api/nodes", nodesRouter);
 app.use("/api/exploits", exploits);
+app.use("/api/data", data);
 
 mongoose.connect("mongodb://127.0.0.1:27017/cbas", {
   useNewUrlParser: true,
