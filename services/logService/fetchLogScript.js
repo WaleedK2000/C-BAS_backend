@@ -52,24 +52,31 @@ async function getSucessfulScriptsBreakdownByNodeId(timeframe) {
     timestamp: { $gte: startDate },
   });
 
-  const breakdownByNodeId = executedScripts.reduce(async (acc, script) => {
+  // Use an empty object as the initial value for the breakdown
+  const breakdownByNodeId = {};
+
+  // Use a for loop to iterate over the executed scripts
+  for (const script of executedScripts) {
+    // Await the result of finding the node by id
     const node = await Node.findById(script.nodeId);
     const nodeName = node.name;
 
-    if (!acc[script.nodeId]) {
-      acc[script.nodeId] = {
+    // Check if the node id is already in the breakdown object
+    if (!breakdownByNodeId[script.nodeId]) {
+      // If not, initialize it with zero counts and node name
+      breakdownByNodeId[script.nodeId] = {
         successfulCount: 0,
         failedCount: 0,
         node_name: nodeName,
       };
     }
+    // Increment the counts based on the script success
     if (script.success) {
-      acc[script.nodeId].successfulCount++;
+      breakdownByNodeId[script.nodeId].successfulCount++;
     } else {
-      acc[script.nodeId].failedCount++;
+      breakdownByNodeId[script.nodeId].failedCount++;
     }
-    return acc;
-  }, {});
+  }
 
   return breakdownByNodeId;
 }
