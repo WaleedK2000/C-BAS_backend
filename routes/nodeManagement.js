@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Node = require("../models/Node");
+const axios = require("axios");
 
 // Create a node
 router.post("/", async (req, res) => {
@@ -22,7 +23,28 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const nodes = await Node.find();
-    res.json(nodes);
+    const nodesWithStatus = await Promise.all(
+      nodes.map(async (node) => {
+        const ip = node.ipAddress + ":" + node.portNumber;
+        console.log(ip);
+        const url = `${ip}/api/ping/`;
+        console.log(url);
+        let connectionStatus;
+
+        await axios
+          .get(url)
+          .then((res) => {
+            connectionStatus = 200;
+          })
+          .catch((res) => {
+            connectionStatus = 404;
+          });
+        // connectionStatus = "online";
+
+        return { ...node.toObject(), connectionStatus };
+      })
+    );
+    res.json(nodesWithStatus);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

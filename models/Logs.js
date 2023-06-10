@@ -1,9 +1,38 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const logSchema = new mongoose.Schema({
+// base log schema
+const logSchema = new Schema({
   timestamp: Date,
   path: String,
   success: Boolean,
-  type: String,
+  logType: String,
 });
+
+// script log model
+const scriptLogModel = mongoose.model(
+  "ScriptLog",
+  new Schema({
+    ...logSchema.obj, // inherit properties from base schema
+    scriptName: String,
+    nodeId: String,
+  })
+);
+
+// login log model
+const loginLogModel = mongoose.model(
+  "LoginLog",
+  new Schema({
+    ...logSchema.obj, // inherit properties from base schema
+    username: String,
+  })
+);
+
+// browser event log model
+const browserEventLogModel = mongoose.model(
+  "BrowserEventLog",
+  new Schema({
+    ...logSchema.obj, // inherit properties from base schema
+    eventType: String,
+  })
+);
