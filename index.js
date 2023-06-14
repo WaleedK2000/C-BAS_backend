@@ -21,7 +21,7 @@ app.use("/api/nodes", nodesRouter);
 app.use("/api/exploits", exploits);
 app.use("/api/data", data);
 
-mongoose.connect("mongodb://127.0.0.1:27017/cbas", {
+mongoose.connect("mongodb://localhost:27017/cbas", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
