@@ -1,9 +1,13 @@
 // logService.js
-const {
-  scriptLogModel,
-  loginLogModel,
-  browserEventLogModel,
-} = require("../../models/logs/");
+// const {
+//   scriptLogModel,
+//   loginLogModel,
+//   browserEventLogModel,
+// } = require("../../models/Logs");
+
+const scriptLogModel = require("../../models/ScriptLogModel");
+const loginLogModel = require("../../models/LoginLogModel");
+const browserEventLogModel = require("../../models/BrowserEventLogModel");
 
 function createScriptLog(path, success, scriptName, nodeId) {
   const scriptLog = new scriptLogModel({

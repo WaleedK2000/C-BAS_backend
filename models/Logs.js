@@ -36,3 +36,11 @@ const browserEventLogModel = mongoose.model(
     eventType: String,
   })
 );
+
+// module.exports = {
+//   scriptLogModel,
+//   loginLogModel,
+//   browserEventLogModel,
+// };
+
+module.exports = { scriptLogModel, loginLogModel, browserEventLogModel };

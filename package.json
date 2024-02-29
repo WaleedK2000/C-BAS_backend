@@ -12,7 +12,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "devStart": "nodemon server.js"
+    "devStart": "nodemon server.js",
+    "start": "node index.js",
+    "build": "webpack --mode production"
   },
   "author": "waleed",
   "license": "ISC",
