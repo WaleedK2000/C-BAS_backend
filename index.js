@@ -21,12 +21,25 @@ app.use("/api/nodes", nodesRouter);
 app.use("/api/exploits", exploits);
 app.use("/api/data", data);
 
-mongoose.connect("mongodb://127.0.0.1:27017/cbas", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+try {
+  const username = "waleed";
+  const password = "Af3#hqDJC2h$sB";
+  const connectionString = `mongodb+srv://${encodeURIComponent(
+    username
+  )}:${encodeURIComponent(
+    password
+  )}@cbas-backend.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000`;
 
-const port = process.env.PORT || 3000;
+  mongoose.connect(connectionString, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  console.log("Connected to MongoDB");
+} catch (error) {
+  console.error("Failed to connect to MongoDB:", error);
+}
+
+const port = process.env.PORT || 8080;
 app.listen(port, () => console.log(`Server listening on port ${port}`));
 
 // app.listen(3000, () => {
