@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 
-router.post("/ping", async (req, res) => {
+router.get("/ping", async (req, res) => {
   res
     .status(200)
     .json({ message: "Connected to User Management API", req: req.body });
