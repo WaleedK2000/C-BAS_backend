@@ -1,6 +1,5 @@
-const { scriptLogModel } = require("../../models/logs/");
-
 const Node = require("../../models/Node");
+const scriptLogModel = require("../../models/ScriptLogModel");
 
 const getTimeFrame = (timeframe) => {
   let startDate;
