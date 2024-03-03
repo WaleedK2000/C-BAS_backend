@@ -11,30 +11,23 @@ const nodesRouter = require("./routes/nodeManagement");
 const exploits = require("./routes/exploits");
 const data = require("./routes/data");
 
-const msRestAzure = require("ms-rest-azure");
 const { SecretClient } = require("@azure/keyvault-secrets");
-
 const { DefaultAzureCredential } = require("@azure/identity");
 
-const client = new SecretClient(url, credential);
-
-const credential = new DefaultAzureCredential();
-
-async function getKeyVaultCredentials() {
-  return msRestAzure.loginWithAppServiceMSI({
-    resource: "https://vault.azure.net",
-  });
-}
-
 async function getSecretFromKeyVault(secretName, keyVaultName) {
-  const credentials = await getKeyVaultCredentials();
+  const credential = new DefaultAzureCredential();
   const secretClient = new SecretClient(
     `https://${keyVaultName}.vault.azure.net`,
-    credentials
+    credential
   );
 
-  const secret = await secretClient.getSecret(secretName);
-  return secret.value;
+  try {
+    const secret = await secretClient.getSecret(secretName);
+    return secret.value;
+  } catch (error) {
+    console.error("Error retrieving secret from Key Vault:", error.message);
+    throw error;
+  }
 }
 
 const secretName = "mongodb-password";
