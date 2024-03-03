@@ -11,6 +11,44 @@ const nodesRouter = require("./routes/nodeManagement");
 const exploits = require("./routes/exploits");
 const data = require("./routes/data");
 
+const msRestAzure = require("ms-rest-azure");
+const { SecretClient } = require("@azure/keyvault-secrets");
+
+const { DefaultAzureCredential } = require("@azure/identity");
+
+const client = new SecretClient(url, credential);
+
+const credential = new DefaultAzureCredential();
+
+async function getKeyVaultCredentials() {
+  return msRestAzure.loginWithAppServiceMSI({
+    resource: "https://vault.azure.net",
+  });
+}
+
+async function getSecretFromKeyVault(secretName, keyVaultName) {
+  const credentials = await getKeyVaultCredentials();
+  const secretClient = new SecretClient(
+    `https://${keyVaultName}.vault.azure.net`,
+    credentials
+  );
+
+  const secret = await secretClient.getSecret(secretName);
+  return secret.value;
+}
+
+const secretName = "mongodb-password";
+const keyVaultName = "cbas-secrets";
+
+const pass = getSecretFromKeyVault(secretName, keyVaultName)
+  .then((secretValue) => {
+    console.log(`Secret value retrieved from Key Vault: ${secretValue}`);
+    // Use the secret value in your MongoDB connection string
+  })
+  .catch((error) => {
+    console.error("Error retrieving secret from Key Vault:", error.message);
+  });
+
 // const signupRoute = rq
 
 app.use(express.json());
@@ -23,7 +61,7 @@ app.use("/api/data", data);
 
 try {
   const username = "waleed";
-  const password = "Af3#hqDJC2h$sB";
+  const password = pass;
   const connectionString = `mongodb+srv://${encodeURIComponent(
     username
   )}:${encodeURIComponent(
