@@ -11,36 +11,23 @@ const nodesRouter = require("./routes/nodeManagement");
 const exploits = require("./routes/exploits");
 const data = require("./routes/data");
 
-const { SecretClient } = require("@azure/keyvault-secrets");
+require("dotenv").config();
 const { DefaultAzureCredential } = require("@azure/identity");
+const { SecretClient } = require("@azure/keyvault-secrets");
+const credential = new DefaultAzureCredential();
+const client = new SecretClient(process.env.KEYVAULT_URI, credential);
 
-async function getSecretFromKeyVault(secretName, keyVaultName) {
-  const credential = new DefaultAzureCredential();
-  const secretClient = new SecretClient(
-    `https://${keyVaultName}.vault.azure.net`,
-    credential
-  );
-
-  try {
-    const secret = await secretClient.getSecret(secretName);
-    return secret.value;
-  } catch (error) {
-    console.error("Error retrieving secret from Key Vault:", error.message);
-    throw error;
-  }
-}
-
-const secretName = "mongodb-password";
-const keyVaultName = "cbas-secrets";
-
-const pass = getSecretFromKeyVault(secretName, keyVaultName)
-  .then((secretValue) => {
-    console.log(`Secret value retrieved from Key Vault: ${secretValue}`);
-    // Use the secret value in your MongoDB connection string
-  })
-  .catch((error) => {
-    console.error("Error retrieving secret from Key Vault:", error.message);
-  });
+app.get("/secret", (req, res) => {
+  client
+    .getSecret("mongodb-password")
+    .then((data) => {
+      res.send(data.value);
+    })
+    .catch((error) => {
+      console.log(error);
+      res.send(error);
+    });
+});
 
 // const signupRoute = rq
 
@@ -53,8 +40,35 @@ app.use("/api/exploits", exploits);
 app.use("/api/data", data);
 
 try {
+  async function connectToMongoDB() {
+    try {
+      let password = await client.getSecret("mongodb-password");
+
+      const username = "waleed";
+
+      const connectionString = `mongodb+srv://${encodeURIComponent(
+        username
+      )}:${encodeURIComponent(
+        password.value
+      )}@cbas-backend.mongocluster.cosmos.azure.com/?tls=true&authMechanism=SCRAM-SHA-256&retrywrites=false&maxIdleTimeMS=120000`;
+
+      await mongoose.connect(connectionString, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      console.log("Connected to MongoDB");
+    } catch (error) {
+      console.error("Failed to connect to MongoDB:", error);
+    }
+  }
+
+  connectToMongoDB();
+
+  const port = process.env.PORT || 8080;
+  app.listen(port, () => console.log(`Server listening on port ${port}`));
+
   const username = "waleed";
-  const password = pass;
+
   const connectionString = `mongodb+srv://${encodeURIComponent(
     username
   )}:${encodeURIComponent(
@@ -69,9 +83,6 @@ try {
 } catch (error) {
   console.error("Failed to connect to MongoDB:", error);
 }
-
-const port = process.env.PORT || 8080;
-app.listen(port, () => console.log(`Server listening on port ${port}`));
 
 // app.listen(3000, () => {
 //   //   const MyModel = mongoose.model("Test", new Schema({ name: String }));
