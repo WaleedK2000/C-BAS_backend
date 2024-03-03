@@ -2,8 +2,12 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 
+const { DefaultAzureCredential } = require("@azure/identity");
+const { SecretClient } = require("@azure/keyvault-secrets");
+
 const app = express();
 
+require("dotenv").config();
 const User = require("./models/User");
 
 const userMangementRoutes = require("./routes/userManagement");
@@ -11,25 +15,8 @@ const nodesRouter = require("./routes/nodeManagement");
 const exploits = require("./routes/exploits");
 const data = require("./routes/data");
 
-require("dotenv").config();
-const { DefaultAzureCredential } = require("@azure/identity");
-const { SecretClient } = require("@azure/keyvault-secrets");
 const credential = new DefaultAzureCredential();
 const client = new SecretClient(process.env.KEYVAULT_URI, credential);
-
-app.get("/secret", (req, res) => {
-  client
-    .getSecret("mongodb-password")
-    .then((data) => {
-      res.send(data.value);
-    })
-    .catch((error) => {
-      console.log(error);
-      res.send(error);
-    });
-});
-
-// const signupRoute = rq
 
 app.use(express.json());
 app.use(cors());
